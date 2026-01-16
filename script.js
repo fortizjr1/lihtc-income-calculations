@@ -204,6 +204,23 @@ function printPage() {
   window.print();
 }
 
+function downloadPDF() {
+  var element = document.querySelector(".page");
+  var memberName = document.getElementById("memberName").value || "Member";
+  var filename = "SSI_Calculation_" + memberName.replace(/\s+/g, "_") + ".pdf";
+
+  var opt = {
+    margin: 0.5,
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  // New Promise-based usage:
+  html2pdf().set(opt).from(element).save();
+}
+
 function autoFillColaBase() {
   var currentMonthlyInput = document.getElementById("currentMonthlyBenefit");
   var colaCurrentMonthlyInput = document.getElementById("colaCurrentMonthly");
@@ -218,8 +235,10 @@ function autoFillColaBase() {
 document.addEventListener("DOMContentLoaded", function () {
   var resetButton = document.getElementById("resetButton");
   var printButton = document.getElementById("printButton");
+  var downloadPdfButton = document.getElementById("downloadPdfButton");
   if (resetButton) resetButton.addEventListener("click", resetForm);
   if (printButton) printButton.addEventListener("click", printPage);
+  if (downloadPdfButton) downloadPdfButton.addEventListener("click", downloadPDF);
 
   // Inputs that trigger calculation
   var calcInputs = [

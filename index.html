@@ -99,12 +99,14 @@
 </div>
 </div>
 </section>
-<section class="actions">
-<button id="resetButton" type="button" class="btn">Reset</button>
-<button id="printButton" type="button" class="btn">Print</button>
+<section class="actions no-print">
+<button id="resetButton" type="button" class="btn outline">Reset</button>
+<button id="downloadPdfButton" type="button" class="btn primary">Download PDF</button>
+<button id="printButton" type="button" class="btn outline">Print</button>
 <div id="message" class="message" aria-live="polite"></div>
 </section>
 </main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

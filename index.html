@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Social Security Annual Benefit Calculator</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="page">
+<header class="page-header">
+<h1>Social Security Annual Benefit Calculator</h1>
+</header>
+<section class="card">
+<div class="card-header">
+<div class="field-block header-name">
+<label for="memberName">Household Member Name</label>
+<input id="memberName" type="text" autocomplete="name">
+</div>
+<div class="field-block header-apt">
+<label for="apartmentNumber">Apartment Number</label>
+<input id="apartmentNumber" type="text" autocomplete="on">
+</div>
+<div class="field-block header-date">
+<label for="effectiveDate">Effective Date / Move In Date <span style="color: #b91c1c;">*</span></label>
+<input id="effectiveDate" type="date" required>
+</div>
+</div>
+<div class="card-body">
+<h2>Current Benefit</h2>
+<div class="grid grid-current">
+<div class="field-block">
+<label for="currentMonthlyBenefit">Enter the current monthly benefit amount</label>
+<div class="currency-input">
+<span class="currency-prefix">$</span>
+<input id="currentMonthlyBenefit" type="number" step="0.01" min="0" inputmode="decimal">
+</div>
+<p class="hint">Before any deductions</p>
+</div>
+<div class="field-block">
+<label for="currentAnnualBenefit">Current annual benefit</label>
+<div class="currency-input">
+<span class="currency-prefix">$</span>
+<input id="currentAnnualBenefit" type="text" readonly>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="card">
+<div class="card-body">
+<h2>COLA Adjustment (Next Year)</h2>
+<p class="hint">Complete this section if a cost-of-living adjustment (COLA) is known for next year.</p>
+<div class="grid grid-cola">
+<div class="field-block">
+<label for="colaEffectiveDate">COLA effective date</label>
+<input id="colaEffectiveDate" type="date">
+</div>
+<div class="field-block">
+<label for="colaPercent">Enter COLA increase %</label>
+<div class="percent-input">
+<input id="colaPercent" type="number" step="0.01" min="0" inputmode="decimal">
+<span class="percent-suffix">%</span>
+</div>
+</div>
+<div class="field-block">
+<label for="colaCurrentMonthly">Current monthly benefit before COLA</label>
+<div class="currency-input">
+<span class="currency-prefix">$</span>
+<input id="colaCurrentMonthly" type="number" step="0.01" min="0" inputmode="decimal">
+</div>
+</div>
+<div class="field-block">
+<label for="colaMonthlyBenefit">Monthly benefit after COLA</label>
+<div class="currency-input">
+<span class="currency-prefix">$</span>
+<input id="colaMonthlyBenefit" type="text" readonly>
+</div>
+</div>
+<div class="field-block">
+<label for="colaAnnualBenefit">Annual benefit after COLA</label>
+<div class="currency-input">
+<span class="currency-prefix">$</span>
+<input id="colaAnnualBenefit" type="text" readonly>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="card">
+<div class="card-body">
+<div id="breakdownContainer" class="breakdown-info"></div>
+<div class="total-row">
+<label for="totalAnnualBenefit">Total annual benefit for this member</label>
+<div class="currency-input" style="grid-column: span 1;">
+<span class="currency-prefix">$</span>
+<input id="totalAnnualBenefit" type="text" readonly>
+</div>
+</div>
+</div>
+</section>
+<section class="actions">
+<button id="resetButton" type="button" class="btn">Reset</button>
+<button id="printButton" type="button" class="btn">Print</button>
+<div id="message" class="message" aria-live="polite"></div>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
+

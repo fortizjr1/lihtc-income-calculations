@@ -67,6 +67,20 @@
 }
 
 @media (max-width: 640px) {
+  .tabs {
+    flex-direction: column;
+    border-bottom: none;
+    gap: 0.75rem;
+  }
+  .tab-btn {
+    width: 100%;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem;
+  }
+  .tab-btn.active {
+    border-color: #2563eb;
+  }
   .pay-stubs-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -134,8 +148,17 @@ text-align: center;
 margin-bottom: 1.5rem;
 }
 .page-header h1 {
-font-size: 1.75rem;
-margin: 0;
+  font-size: 1.75rem;
+  margin: 0;
+}
+.header-description {
+  margin: 0.75rem 0 0;
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .card {
 border: 1px solid #e5e7eb;

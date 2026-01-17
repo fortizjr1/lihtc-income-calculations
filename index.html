@@ -198,8 +198,15 @@
           </div>
         </div>
 
-        <div class="grid" style="grid-template-columns: 1fr; margin-top: 1.5rem;">
-          <div class="field-block" style="max-width: 300px;">
+        <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+          <div class="field-block">
+            <label for="avgGrossPay">Average Gross Pay</label>
+            <div class="currency-input">
+              <span class="currency-prefix">$</span>
+              <input id="avgGrossPay" type="text" readonly>
+            </div>
+          </div>
+          <div class="field-block">
             <label for="payFrequency">Pay Frequency</label>
             <select id="payFrequency" class="form-select">
               <option value="52">Weekly (52)</option>
@@ -210,15 +217,21 @@
           </div>
         </div>
 
-        <div class="total-row" style="margin-top: 2rem;">
+        <div id="dateWarning" class="date-warning" style="display: none;">
+          <strong>Warning:</strong> One or more pay stub dates are more than 120 days before the effective date. HUD recommends stubs within 120 days of the certification date.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <div id="empBreakdownContainer" class="breakdown-info"></div>
+        <div class="total-row">
           <label for="totalEmploymentIncome">Total annual employment income</label>
-          <div class="currency-input">
+          <div class="currency-input" style="grid-column: span 1;">
             <span class="currency-prefix">$</span>
             <input id="totalEmploymentIncome" type="text" readonly>
           </div>
-        </div>
-        <div id="dateWarning" class="date-warning" style="display: none;">
-          <strong>Warning:</strong> One or more pay stub dates are more than 120 days before the effective date. HUD recommends stubs within 120 days of the certification date.
         </div>
       </div>
     </section>

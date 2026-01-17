@@ -213,12 +213,12 @@ function calculate() {
 
 function calculateEmployment() {
   var totalEmploymentOutput = document.getElementById("totalEmploymentIncome");
+  var avgGrossOutput = document.getElementById("avgGrossPay");
+  var empBreakdownContainer = document.getElementById("empBreakdownContainer");
   var payFrequencyInput = document.getElementById("payFrequency");
   var effectiveDateInput = document.getElementById("empEffectiveDate");
   var dateWarning = document.getElementById("dateWarning");
   
-  if (!totalEmploymentOutput || !payFrequencyInput) return;
-
   var stubInputs = [
     document.getElementById("grossPay1"),
     document.getElementById("grossPay2"),
@@ -272,16 +272,38 @@ function calculateEmployment() {
   var frequency = parseInt(payFrequencyInput.value, 10);
 
   if (stubCount === 0) {
+    if (avgGrossOutput) avgGrossOutput.value = "";
     totalEmploymentOutput.value = "";
+    if (empBreakdownContainer) empBreakdownContainer.innerHTML = "";
     return;
   }
 
   // Calculate average per stub
   var averageGross = totalGross / stubCount;
+  if (avgGrossOutput) avgGrossOutput.value = formatCurrency(averageGross);
   
   // Calculate annual income
   var totalAnnual = averageGross * frequency;
   totalEmploymentOutput.value = formatCurrency(totalAnnual);
+
+  // Show breakdown
+  if (empBreakdownContainer) {
+    var frequencyText = payFrequencyInput.options[payFrequencyInput.selectedIndex].text.split(" ")[0];
+    empBreakdownContainer.innerHTML = `
+      <div class="breakdown-item">
+        <span>Average Gross Pay:</span>
+        <span>$${formatCurrency(averageGross)}</span>
+      </div>
+      <div class="breakdown-item">
+        <span>Pay Frequency:</span>
+        <span>${frequency} (${frequencyText})</span>
+      </div>
+      <div class="breakdown-item">
+        <span>Calculation:</span>
+        <span>$${formatCurrency(averageGross)} × ${frequency} = $${formatCurrency(totalAnnual)}</span>
+      </div>
+    `;
+  }
 }
 
 function resetForm() {
@@ -299,6 +321,8 @@ function resetForm() {
   // Clear breakdowns
   var breakdownContainer = document.getElementById("breakdownContainer");
   if (breakdownContainer) breakdownContainer.innerHTML = "";
+  var empBreakdownContainer = document.getElementById("empBreakdownContainer");
+  if (empBreakdownContainer) empBreakdownContainer.innerHTML = "";
 
   // Clear warnings
   var dateWarning = document.getElementById("dateWarning");

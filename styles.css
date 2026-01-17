@@ -222,7 +222,7 @@ gap: 0.75rem 1.25rem;
 align-items: end;
 }
 .grid-current {
-grid-template-columns: 1fr 1fr;
+grid-template-columns: repeat(3, minmax(0, 1fr));
 align-items: start;
 }
 .grid-cola {

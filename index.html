@@ -38,7 +38,11 @@
         <h2>Current Benefit</h2>
         <div class="grid grid-current">
           <div class="field-block">
-            <label for="currentMonthlyBenefit">Enter the current monthly benefit amount</label>
+            <label for="ssLetterDate">Social Security Letter Date</label>
+            <input id="ssLetterDate" type="date">
+          </div>
+          <div class="field-block">
+            <label for="currentMonthlyBenefit">Current monthly benefit amount</label>
             <div class="currency-input">
               <span class="currency-prefix">$</span>
               <input id="currentMonthlyBenefit" type="number" step="0.01" min="0" inputmode="decimal">
@@ -98,6 +102,9 @@
     <section class="card">
       <div class="card-body">
         <div id="breakdownContainer" class="breakdown-info"></div>
+        <div id="ssDateWarning" class="date-warning" style="display: none;">
+          <strong>Warning:</strong> The Social Security Letter is dated more than 120 days from the Effective Date. HUD recommends using documents dated within 120 days of the effective date for income verification.
+        </div>
         <div class="total-row">
           <label for="totalAnnualBenefit">Total annual benefit for this member</label>
           <div class="currency-input" style="grid-column: span 1;">

@@ -80,6 +80,28 @@ function calculate() {
   // For now, let's proceed but if effectiveDate is missing, totalAnnual is just 0 or empty?
   var effectiveDate = parseDate(effectiveDateInput.value);
   
+  // Date validation for Social Security Letter
+  var ssLetterDateInput = document.getElementById("ssLetterDate");
+  var ssDateWarning = document.getElementById("ssDateWarning");
+  if (ssLetterDateInput) {
+    ssLetterDateInput.classList.remove("invalid-date");
+    if (effectiveDate && ssLetterDateInput.value) {
+      var ssLetterDate = parseDate(ssLetterDateInput.value);
+      if (ssLetterDate) {
+        var diffTime = effectiveDate.getTime() - ssLetterDate.getTime();
+        var diffDays = diffTime / (1000 * 3600 * 24);
+        if (diffDays > 120 || diffDays < 0) {
+          ssLetterDateInput.classList.add("invalid-date");
+          if (ssDateWarning) ssDateWarning.style.display = "block";
+        } else {
+          if (ssDateWarning) ssDateWarning.style.display = "none";
+        }
+      }
+    } else {
+      if (ssDateWarning) ssDateWarning.style.display = "none";
+    }
+  }
+
   if (!effectiveDate) {
      // If effective date is missing, we can calculate the top parts (current/cola) 
      // but the TOTAL depends on the start date (Move In Date).
@@ -281,6 +303,8 @@ function resetForm() {
   // Clear warnings
   var dateWarning = document.getElementById("dateWarning");
   if (dateWarning) dateWarning.style.display = "none";
+  var ssDateWarning = document.getElementById("ssDateWarning");
+  if (ssDateWarning) ssDateWarning.style.display = "none";
   
   // Clear date highlights
   var dateInputs = document.querySelectorAll('input[type="date"]');
@@ -378,7 +402,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "colaPercent",
     "colaCurrentMonthly",
     "effectiveDate",
-    "colaEffectiveDate"
+    "colaEffectiveDate",
+    "ssLetterDate"
   ];
 
   ssCalcInputs.forEach(function(id) {

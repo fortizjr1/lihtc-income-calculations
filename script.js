@@ -192,6 +192,8 @@ function calculate() {
 function calculateEmployment() {
   var totalEmploymentOutput = document.getElementById("totalEmploymentIncome");
   var payFrequencyInput = document.getElementById("payFrequency");
+  var effectiveDateInput = document.getElementById("empEffectiveDate");
+  var dateWarning = document.getElementById("dateWarning");
   
   if (!totalEmploymentOutput || !payFrequencyInput) return;
 
@@ -201,19 +203,49 @@ function calculateEmployment() {
     document.getElementById("grossPay3"),
     document.getElementById("grossPay4")
   ];
+  
+  var dateInputs = [
+    document.getElementById("payDate1"),
+    document.getElementById("payDate2"),
+    document.getElementById("payDate3"),
+    document.getElementById("payDate4")
+  ];
 
   var totalGross = 0;
   var stubCount = 0;
+  var hasOutdatedDate = false;
+  var effectiveDate = parseDate(effectiveDateInput ? effectiveDateInput.value : "");
 
-  stubInputs.forEach(function(input) {
+  stubInputs.forEach(function(input, index) {
     if (input) {
+      // Clear previous highlighting
+      if (dateInputs[index]) dateInputs[index].classList.remove("invalid-date");
+      
       var val = parseNumber(input.value);
       if (val !== null && val > 0) {
         totalGross += val;
         stubCount++;
+        
+        // Date validation logic
+        if (effectiveDate && dateInputs[index] && dateInputs[index].value) {
+          var stubDate = parseDate(dateInputs[index].value);
+          if (stubDate) {
+            var diffTime = effectiveDate.getTime() - stubDate.getTime();
+            var diffDays = diffTime / (1000 * 3600 * 24);
+            if (diffDays > 120 || diffDays < 0) {
+              hasOutdatedDate = true;
+              dateInputs[index].classList.add("invalid-date");
+            }
+          }
+        }
       }
     }
   });
+
+  // Show/hide date warning
+  if (dateWarning) {
+    dateWarning.style.display = hasOutdatedDate ? "block" : "none";
+  }
 
   var frequency = parseInt(payFrequencyInput.value, 10);
 
@@ -245,6 +277,16 @@ function resetForm() {
   // Clear breakdowns
   var breakdownContainer = document.getElementById("breakdownContainer");
   if (breakdownContainer) breakdownContainer.innerHTML = "";
+
+  // Clear warnings
+  var dateWarning = document.getElementById("dateWarning");
+  if (dateWarning) dateWarning.style.display = "none";
+  
+  // Clear date highlights
+  var dateInputs = document.querySelectorAll('input[type="date"]');
+  dateInputs.forEach(function(input) {
+    input.classList.remove("invalid-date");
+  });
 
   // Focus the name field of the active section
   var activeSection = document.querySelector(".calculator-section.active");
@@ -351,6 +393,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Employment Inputs that trigger calculation
   var empCalcInputs = [
+    "empEffectiveDate",
     "grossPay1", "payDate1",
     "grossPay2", "payDate2",
     "grossPay3", "payDate3",

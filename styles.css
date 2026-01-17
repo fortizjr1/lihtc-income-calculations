@@ -102,6 +102,33 @@
   }
 }
 
+/* Date Warning Styling */
+.date-warning {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 0.5rem;
+  color: #991b1b;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.invalid-date {
+  border-color: #ef4444 !important;
+  background-color: #fff1f2 !important;
+  color: #991b1b !important;
+}
+
+@media print {
+  .date-warning {
+    background-color: transparent !important;
+    border-color: #991b1b !important;
+    margin-top: 0.75rem !important;
+    padding: 0.5rem !important;
+  }
+}
+
 /* Form Select Styling */
 .form-select {
   cursor: pointer;

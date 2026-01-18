@@ -436,9 +436,10 @@ border: 1px solid #e2e8f0;
 border-radius: 0.5rem;
 font-size: 0.95rem;
 color: #334155;
+display: block; /* Explicitly set display */
 }
 .breakdown-info:empty {
-display: none;
+display: none !important;
 }
 .breakdown-item {
 display: flex;

@@ -286,6 +286,15 @@ function calculateEmployment() {
   var totalAnnual = averageGross * frequency;
   totalEmploymentOutput.value = formatCurrency(totalAnnual);
 
+  // Debug log to check if calculation reaches this point
+  console.log("Employment calculation:", {
+    totalGross,
+    stubCount,
+    averageGross,
+    frequency,
+    totalAnnual
+  });
+
   // Show breakdown
   if (empBreakdownContainer) {
     var frequencyText = payFrequencyInput.options[payFrequencyInput.selectedIndex].text.split(" ")[0];
@@ -303,6 +312,8 @@ function calculateEmployment() {
         <span>$${formatCurrency(averageGross)} × ${frequency} = $${formatCurrency(totalAnnual)}</span>
       </div>
     `;
+    // Ensure the container is visible
+    empBreakdownContainer.style.display = "block";
   }
 }
 

@@ -543,7 +543,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var evCalcInputs = [
     "evEffectiveDate", "evLetterDate", "baseRate", "payBasis", "hoursPerWeek",
     "overtimeRate", "overtimeHours", "shiftDiffRate", "shiftDiffHours",
-    "commissionsAmount", "commissionsBasis", "otherPayBasis",
+    "commissionsAmount", "commissionsBasis",
     "anticipatedChange", "changeBasis", "changeEffectiveDate"
   ];
   evCalcInputs.forEach(function(id) {
@@ -574,9 +574,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (payBasisSelect) {
     payBasisSelect.addEventListener("change", function() {
       var hoursBlock = document.getElementById("hoursPerWeekBlock");
-      var otherBlock = document.getElementById("otherPayBasisBlock");
       if (hoursBlock) hoursBlock.style.display = (this.value === "hourly") ? "block" : "none";
-      if (otherBlock) otherBlock.style.display = (this.value === "other") ? "block" : "none";
       calculateEV();
     });
   }

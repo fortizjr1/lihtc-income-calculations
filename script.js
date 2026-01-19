@@ -196,16 +196,30 @@ function calculate() {
     var html = "";
     // Only show if we have a valid total
     if (totalAnnual > 0) {
-        if (monthsCurrentCount > 0) {
-            var subTotal = monthsCurrentCount * currentMonthly;
-            html += '<div class="breakdown-item"><span>$' + formatCurrency(currentMonthly) + ' &times; ' + monthsCurrentCount + ' months</span> <span>$' + formatCurrency(subTotal) + '</span></div>';
-        }
-        if (monthsColaCount > 0) {
-            var subTotal = monthsColaCount * colaMonthly;
-            html += '<div class="breakdown-item"><span>$' + formatCurrency(colaMonthly) + ' (COLA) &times; ' + monthsColaCount + ' months</span> <span>$' + formatCurrency(subTotal) + '</span></div>';
-        }
-        // Total line
-        // html += '<div class="breakdown-item"><span>Total</span> <span>$' + formatCurrency(totalAnnual) + '</span></div>';
+      html += '<div style="font-weight: 600; color: #1e293b; margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.25rem;">Social Security Breakdown</div>';
+      
+      var ssLetterDateInput = document.getElementById("ssLetterDate");
+      var ssLetterDate = ssLetterDateInput ? parseDate(ssLetterDateInput.value) : null;
+      var ssLetterDateStr = ssLetterDate ? " (" + formatDateMMDDYYYY(ssLetterDate) + ")" : "";
+
+      html += '<div class="breakdown-item"><span>Social Security Amount' + ssLetterDateStr + ':</span> <span>$' + formatCurrency(currentMonthly) + '</span></div>';
+
+      if (hasCola) {
+        var colaDateStr = colaEffectiveDate ? " (" + formatDateMMDDYYYY(colaEffectiveDate) + ")" : "";
+        html += '<div class="breakdown-item"><span>COLA Monthly Benefit' + colaDateStr + ':</span> <span>$' + formatCurrency(colaMonthly) + '</span></div>';
+      }
+
+      // Calculation split summary
+      html += '<div style="margin-top: 0.5rem; border-top: 1px solid #e2e8f0; padding-top: 0.5rem;">';
+      if (monthsCurrentCount > 0) {
+        var subTotal = monthsCurrentCount * currentMonthly;
+        html += '<div class="breakdown-item"><span>$' + formatCurrency(currentMonthly) + ' &times; ' + monthsCurrentCount + ' months:</span> <span>$' + formatCurrency(subTotal) + '</span></div>';
+      }
+      if (monthsColaCount > 0) {
+        var subTotal = monthsColaCount * colaMonthly;
+        html += '<div class="breakdown-item"><span>$' + formatCurrency(colaMonthly) + ' (COLA) &times; ' + monthsColaCount + ' months:</span> <span>$' + formatCurrency(subTotal) + '</span></div>';
+      }
+      html += '</div>';
     }
     breakdownContainer.innerHTML = html;
   }

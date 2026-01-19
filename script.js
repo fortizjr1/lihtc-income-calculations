@@ -200,12 +200,12 @@ function calculate() {
       
       var ssLetterDateInput = document.getElementById("ssLetterDate");
       var ssLetterDate = ssLetterDateInput ? parseDate(ssLetterDateInput.value) : null;
-      var ssLetterDateStr = ssLetterDate ? " (" + formatDateMMDDYYYY(ssLetterDate) + ")" : "";
+      var ssLetterDateStr = ssLetterDate ? " (Dated " + formatDateMMDDYYYY(ssLetterDate) + ")" : "";
 
-      html += '<div class="breakdown-item"><span>Social Security Amount' + ssLetterDateStr + ':</span> <span>$' + formatCurrency(currentMonthly) + '</span></div>';
+      html += '<div class="breakdown-item"><span>Social Security' + ssLetterDateStr + ':</span> <span>$' + formatCurrency(currentMonthly) + '</span></div>';
 
       if (hasCola) {
-        var colaDateStr = colaEffectiveDate ? " (" + formatDateMMDDYYYY(colaEffectiveDate) + ")" : "";
+        var colaDateStr = colaEffectiveDate ? " (Dated " + formatDateMMDDYYYY(colaEffectiveDate) + ")" : "";
         html += '<div class="breakdown-item"><span>COLA Monthly Benefit' + colaDateStr + ':</span> <span>$' + formatCurrency(colaMonthly) + '</span></div>';
       }
 
@@ -339,10 +339,10 @@ function calculateEmployment() {
   if (empBreakdownContainer) {
     var frequencyText = payFrequencyInput.options[payFrequencyInput.selectedIndex].text.split(" ")[0];
     var stubsHtml = validStubs.map(function(stub, idx) {
-      var dateStr = stub.date ? ` (${formatDateMMDDYYYY(stub.date)})` : "";
+      var dateStr = stub.date ? ` (Dated ${formatDateMMDDYYYY(stub.date)})` : "";
       return `
         <div class="breakdown-item">
-          <span>Stub ${idx + 1} Amount${dateStr}:</span>
+          <span>Stub ${idx + 1}${dateStr}:</span>
           <span>$${formatCurrency(stub.amount)}</span>
         </div>
       `;

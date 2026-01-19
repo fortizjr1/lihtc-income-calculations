@@ -34,6 +34,7 @@
   <div class="tabs no-print">
     <button class="tab-btn active" data-target="ss-calculator">Social Security</button>
     <button class="tab-btn" data-target="employment-calculator">Pay Stubs</button>
+    <button class="tab-btn" data-target="verification-calculator">Employment Verification</button>
   </div>
 
   <div id="ss-calculator" class="calculator-section active">
@@ -291,6 +292,191 @@
           <div class="currency-input">
             <span class="currency-prefix">$</span>
             <input id="totalEmploymentIncome" type="text" readonly>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="verification-calculator" class="calculator-section">
+    <section class="card">
+      <div class="card-header">
+        <div class="field-block header-name">
+          <label for="evMemberName">Household Member Name</label>
+          <input id="evMemberName" type="text" autocomplete="name">
+        </div>
+        <div class="field-block header-apt">
+          <label for="evUnitNumber">Unit #</label>
+          <input id="evUnitNumber" type="text" autocomplete="on">
+        </div>
+        <div class="field-block header-date">
+          <label for="evEffectiveDate">Effective Date / Move In Date <span style="color: #b91c1c;">*</span></label>
+          <input id="evEffectiveDate" type="date" required placeholder="choose date">
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Employment Status</h2>
+        <div class="grid grid-2">
+          <div class="field-block">
+            <label>Presently Employed?</label>
+            <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
+              <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 400;">
+                <input type="radio" name="presentlyEmployed" value="yes" checked> Yes
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 400;">
+                <input type="radio" name="presentlyEmployed" value="no"> No
+              </label>
+            </div>
+          </div>
+          <div class="field-block" id="employmentDateBlock">
+            <label id="employmentDateLabel" for="employmentDate">Date First Employed</label>
+            <input id="employmentDate" type="date" placeholder="choose date">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h2>Base Wages / Salary</h2>
+        <div class="grid grid-2">
+          <div class="field-block">
+            <label for="baseRate">Current Wages/Salary</label>
+            <div class="currency-input">
+              <span class="currency-prefix">$</span>
+              <input id="baseRate" type="number" step="0.01" min="0" inputmode="decimal">
+            </div>
+          </div>
+          <div class="field-block">
+            <label for="payBasis">Pay Basis</label>
+            <select id="payBasis" class="form-select">
+              <option value="hourly">Hourly</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Bi-Weekly</option>
+              <option value="semimonthly">Semi-Monthly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="field-block">
+            <label for="evLetterDate">EV Letter Date</label>
+            <input id="evLetterDate" type="date" placeholder="choose date">
+          </div>
+          <div class="field-block" id="hoursPerWeekBlock">
+            <label for="hoursPerWeek">Average # regular hours per week</label>
+            <input id="hoursPerWeek" type="number" step="0.1" min="0" inputmode="decimal">
+          </div>
+          <div class="field-block" id="otherPayBasisBlock" style="display: none;">
+            <label for="otherPayBasis">Specify Other Basis</label>
+            <input id="otherPayBasis" type="text" placeholder="e.g. per project">
+          </div>
+        </div>
+        <div id="evDateWarning" class="warning-box" style="display: none; margin-top: 1rem;">
+          <strong>Warning:</strong> The Employment Verification Letter is dated more than 120 days from the Effective Date. HUD recommends using documents dated within 120 days of the effective date for income verification.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h2>Additional Pay Rates</h2>
+        <div class="grid grid-2">
+          <div class="field-block">
+            <label for="overtimeRate">Overtime Rate ($ per hour)</label>
+            <div class="currency-input">
+              <span class="currency-prefix">$</span>
+              <input id="overtimeRate" type="number" step="0.01" min="0" inputmode="decimal">
+            </div>
+          </div>
+          <div class="field-block">
+            <label for="overtimeHours">Avg # of overtime hours per week</label>
+            <input id="overtimeHours" type="number" step="0.1" min="0" inputmode="decimal">
+          </div>
+          <div class="field-block">
+            <label for="shiftDiffRate">Shift Differential Rate ($ per hour)</label>
+            <div class="currency-input">
+              <span class="currency-prefix">$</span>
+              <input id="shiftDiffRate" type="number" step="0.01" min="0" inputmode="decimal">
+            </div>
+          </div>
+          <div class="field-block">
+            <label for="shiftDiffHours">Avg # of shift diff. hours per week</label>
+            <input id="shiftDiffHours" type="number" step="0.1" min="0" inputmode="decimal">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h2>Commissions, Tips, Bonuses</h2>
+        <div class="grid grid-2">
+          <div class="field-block">
+            <label for="commissionsAmount">Amount</label>
+            <div class="currency-input">
+              <span class="currency-prefix">$</span>
+              <input id="commissionsAmount" type="number" step="0.01" min="0" inputmode="decimal">
+            </div>
+          </div>
+          <div class="field-block">
+            <label for="commissionsBasis">Pay Basis</label>
+            <select id="commissionsBasis" class="form-select">
+              <option value="hourly">Hourly</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Bi-Weekly</option>
+              <option value="semimonthly">Semi-Monthly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h2>Anticipated Changes & Other Info</h2>
+        <div class="grid grid-2">
+          <div class="field-block">
+            <label for="anticipatedChange">Anticipated rate of pay change (next 12mo)</label>
+            <div class="currency-input">
+              <span class="currency-prefix">$</span>
+              <input id="anticipatedChange" type="number" step="0.01" min="0" inputmode="decimal">
+            </div>
+          </div>
+          <div class="field-block">
+            <label for="changeBasis">Pay Basis for Change</label>
+            <select id="changeBasis" class="form-select">
+              <option value="hourly">Hourly</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Bi-Weekly</option>
+              <option value="semimonthly">Semi-Monthly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly" selected>Yearly</option>
+            </select>
+          </div>
+          <div class="field-block">
+            <label for="changeEffectiveDate">Effective Date of Change</label>
+            <input id="changeEffectiveDate" type="date">
+          </div>
+          <div class="field-block">
+            <label for="seasonalInfo">If seasonal/sporadic, indicate layoff period(s)</label>
+            <input id="seasonalInfo" type="text" placeholder="e.g. Winter layoff Jan-Mar">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <div id="evBreakdownContainer" class="breakdown-info"></div>
+        <div class="total-row">
+          <label for="totalEVIncome">Total annual employment income</label>
+          <div class="currency-input">
+            <span class="currency-prefix">$</span>
+            <input id="totalEVIncome" type="text" readonly>
           </div>
         </div>
       </div>

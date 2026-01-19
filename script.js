@@ -361,41 +361,54 @@ function calculateEmployment() {
 }
 
 function resetForm() {
-  var inputs = document.querySelectorAll("input, select");
+  // Clear all text and number inputs
+  var inputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]');
   inputs.forEach(function (input) {
-    if (input.type === "button" || input.type === "submit") return;
-    if (input.tagName === "SELECT") {
-      input.selectedIndex = 0;
-    } else {
-      input.value = "";
-    }
-  });
-  setMessage("");
-  
-  // Clear breakdowns
-  var breakdownContainer = document.getElementById("breakdownContainer");
-  if (breakdownContainer) breakdownContainer.innerHTML = "";
-  var empBreakdownContainer = document.getElementById("empBreakdownContainer");
-  if (empBreakdownContainer) empBreakdownContainer.innerHTML = "";
-
-  // Clear warnings
-  var dateWarning = document.getElementById("dateWarning");
-  if (dateWarning) dateWarning.style.display = "none";
-  var ssDateWarning = document.getElementById("ssDateWarning");
-  if (ssDateWarning) ssDateWarning.style.display = "none";
-  
-  // Clear date highlights
-  var dateInputs = document.querySelectorAll('input[type="date"]');
-  dateInputs.forEach(function(input) {
+    input.value = "";
     input.classList.remove("invalid-date");
   });
 
-  // Focus the name field of the active section
-  var activeSection = document.querySelector(".calculator-section.active");
-  if (activeSection) {
-    var firstInput = activeSection.querySelector("input[type='text']");
-    if (firstInput) firstInput.focus();
+  // Reset all selects to their first option
+  var selects = document.querySelectorAll('select');
+  selects.forEach(function (select) {
+    select.selectedIndex = 0;
+  });
+
+  // Reset Presently Employed radios to 'yes'
+  var yesRadio = document.querySelector('input[name="presentlyEmployed"][value="yes"]');
+  if (yesRadio) {
+    yesRadio.checked = true;
+    var label = document.getElementById("employmentDateLabel");
+    if (label) label.textContent = "Date First Employed";
   }
+
+  // Hide all warnings
+  var warnings = document.querySelectorAll('.date-warning');
+  warnings.forEach(function (warning) {
+    warning.style.display = "none";
+  });
+
+  // Clear all breakdown containers
+  var breakdowns = document.querySelectorAll('.breakdown-info');
+  breakdowns.forEach(function (breakdown) {
+    breakdown.innerHTML = "";
+    breakdown.style.display = "none";
+  });
+
+  // Reset Social Security specific logic
+  updateCurrentAnnual();
+  calculate();
+  
+  // Reset Employment Pay Stubs logic
+  calculateEmployment();
+
+  // Reset Employment Verification logic
+  calculateEV();
+
+  setMessage("Form reset successfully.", true);
+  setTimeout(function () {
+    setMessage("");
+  }, 3000);
 }
 
 function printPage() {
@@ -524,4 +537,225 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize Pay Stubs visibility on load
   calculateEmployment();
+  calculateEV();
+
+  // Employment Verification Inputs that trigger calculation
+  var evCalcInputs = [
+    "evEffectiveDate", "evLetterDate", "baseRate", "payBasis", "hoursPerWeek",
+    "overtimeRate", "overtimeHours", "shiftDiffRate", "shiftDiffHours",
+    "commissionsAmount", "commissionsBasis", "otherPayBasis",
+    "anticipatedChange", "changeBasis", "changeEffectiveDate"
+  ];
+  evCalcInputs.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      if (el.tagName === "SELECT" || el.type === "date") {
+        el.addEventListener("change", calculateEV);
+      } else {
+        el.addEventListener("input", calculateEV);
+      }
+    }
+  });
+
+  // Handle Presently Employed radios
+  var presentlyEmployedRadios = document.querySelectorAll('input[name="presentlyEmployed"]');
+  presentlyEmployedRadios.forEach(function(radio) {
+    radio.addEventListener("change", function() {
+      var label = document.getElementById("employmentDateLabel");
+      if (label) {
+        label.textContent = (this.value === "yes") ? "Date First Employed" : "Last Date Employed";
+      }
+      calculateEV();
+    });
+  });
+
+  // Toggle hours and other pay basis visibility
+  var payBasisSelect = document.getElementById("payBasis");
+  if (payBasisSelect) {
+    payBasisSelect.addEventListener("change", function() {
+      var hoursBlock = document.getElementById("hoursPerWeekBlock");
+      var otherBlock = document.getElementById("otherPayBasisBlock");
+      if (hoursBlock) hoursBlock.style.display = (this.value === "hourly") ? "block" : "none";
+      if (otherBlock) otherBlock.style.display = (this.value === "other") ? "block" : "none";
+      calculateEV();
+    });
+  }
+
+  // Toggle commissions other block if needed (though not in HTML yet, good to have)
+  var commissionsBasisSelect = document.getElementById("commissionsBasis");
+  if (commissionsBasisSelect) {
+    commissionsBasisSelect.addEventListener("change", calculateEV);
+  }
 });
+
+function calculateEV() {
+  var baseRateInput = document.getElementById("baseRate");
+  var payBasisSelect = document.getElementById("payBasis");
+  var hoursPerWeekInput = document.getElementById("hoursPerWeek");
+  var overtimeRateInput = document.getElementById("overtimeRate");
+  var overtimeHoursInput = document.getElementById("overtimeHours");
+  var shiftDiffRateInput = document.getElementById("shiftDiffRate");
+  var shiftDiffHoursInput = document.getElementById("shiftDiffHours");
+  var commissionsAmountInput = document.getElementById("commissionsAmount");
+  var commissionsBasisSelect = document.getElementById("commissionsBasis");
+  var anticipatedChangeInput = document.getElementById("anticipatedChange");
+  var changeBasisSelect = document.getElementById("changeBasis");
+  var evEffectiveDateInput = document.getElementById("evEffectiveDate");
+  var evLetterDateInput = document.getElementById("evLetterDate");
+  var changeEffectiveDateInput = document.getElementById("changeEffectiveDate");
+  var totalEVIncomeOutput = document.getElementById("totalEVIncome");
+  var evBreakdownContainer = document.getElementById("evBreakdownContainer");
+  var evDateWarning = document.getElementById("evDateWarning");
+
+  // Date validation for EV Letter
+  if (evLetterDateInput && evEffectiveDateInput) {
+    evLetterDateInput.classList.remove("invalid-date");
+    var evEffectiveDate = parseDate(evEffectiveDateInput.value);
+    var evLetterDate = parseDate(evLetterDateInput.value);
+
+    if (evEffectiveDate && evLetterDate) {
+      var diffTime = evEffectiveDate.getTime() - evLetterDate.getTime();
+      var diffDays = diffTime / (1000 * 3600 * 24);
+      if (diffDays > 120 || diffDays < 0) {
+        evLetterDateInput.classList.add("invalid-date");
+        if (evDateWarning) evDateWarning.style.display = "block";
+      } else {
+        if (evDateWarning) evDateWarning.style.display = "none";
+      }
+    } else {
+      if (evDateWarning) evDateWarning.style.display = "none";
+    }
+  }
+
+  var baseRate = parseNumber(baseRateInput.value) || 0;
+  var payBasis = payBasisSelect ? payBasisSelect.value : "hourly";
+  var hoursPerWeek = parseNumber(hoursPerWeekInput.value) || 0;
+  var overtimeRate = parseNumber(overtimeRateInput.value) || 0;
+  var overtimeHours = parseNumber(overtimeHoursInput.value) || 0;
+  var shiftDiffRate = parseNumber(shiftDiffRateInput.value) || 0;
+  var shiftDiffHours = parseNumber(shiftDiffHoursInput.value) || 0;
+  var commissionsAmount = parseNumber(commissionsAmountInput.value) || 0;
+  var commissionsBasis = commissionsBasisSelect ? commissionsBasisSelect.value : "monthly";
+  var anticipatedChange = parseNumber(anticipatedChangeInput ? anticipatedChangeInput.value : "") || 0;
+  var changeBasis = changeBasisSelect ? changeBasisSelect.value : "yearly";
+
+  function getMultiplier(basis) {
+    switch(basis) {
+      case "hourly": return 2080; // 40 hrs * 52 wks (though we use hoursPerWeek for base)
+      case "weekly": return 52;
+      case "biweekly": return 26;
+      case "semimonthly": return 24;
+      case "monthly": return 12;
+      case "yearly": return 1;
+      default: return 0;
+    }
+  }
+
+  var annualBase = 0;
+  var breakdownHtml = "";
+  
+  if (payBasis === "hourly") {
+    annualBase = baseRate * hoursPerWeek * 52;
+    if (annualBase > 0) {
+      breakdownHtml += '<div class="breakdown-item"><span>Base Pay ($' + formatCurrency(baseRate) + ' &times; ' + hoursPerWeek + ' hrs &times; 52 wks):</span> <span>$' + formatCurrency(annualBase) + '</span></div>';
+    }
+  } else {
+    var multiplier = getMultiplier(payBasis);
+    annualBase = baseRate * multiplier;
+    if (annualBase > 0) {
+      var basisText = payBasis.charAt(0).toUpperCase() + payBasis.slice(1);
+      breakdownHtml += '<div class="breakdown-item"><span>Base Pay ($' + formatCurrency(baseRate) + ' &times; ' + multiplier + ' periods):</span> <span>$' + formatCurrency(annualBase) + '</span></div>';
+    }
+  }
+
+  var annualOvertime = overtimeRate * overtimeHours * 52;
+  if (annualOvertime > 0) {
+    breakdownHtml += '<div class="breakdown-item"><span>Overtime ($' + formatCurrency(overtimeRate) + ' &times; ' + overtimeHours + ' hrs &times; 52 wks):</span> <span>$' + formatCurrency(annualOvertime) + '</span></div>';
+  }
+
+  var annualShiftDiff = shiftDiffRate * shiftDiffHours * 52;
+  if (annualShiftDiff > 0) {
+    breakdownHtml += '<div class="breakdown-item"><span>Shift Differential ($' + formatCurrency(shiftDiffRate) + ' &times; ' + shiftDiffHours + ' hrs &times; 52 wks):</span> <span>$' + formatCurrency(annualShiftDiff) + '</span></div>';
+  }
+
+  var annualCommissions = 0;
+  if (commissionsBasis === "hourly") {
+    // For commissions, hourly usually means per hour worked? Or just use 2080.
+    // Let's assume hourly for commissions uses the regular hoursPerWeek if available, else 40.
+    var commHours = hoursPerWeek > 0 ? hoursPerWeek : 40;
+    annualCommissions = commissionsAmount * commHours * 52;
+    if (annualCommissions > 0) {
+      breakdownHtml += '<div class="breakdown-item"><span>Commissions/Tips/Bonuses ($' + formatCurrency(commissionsAmount) + ' &times; ' + commHours + ' hrs &times; 52 wks):</span> <span>$' + formatCurrency(annualCommissions) + '</span></div>';
+    }
+  } else {
+    var commMultiplier = getMultiplier(commissionsBasis);
+    annualCommissions = commissionsAmount * commMultiplier;
+    if (annualCommissions > 0) {
+      breakdownHtml += '<div class="breakdown-item"><span>Commissions/Tips/Bonuses ($' + formatCurrency(commissionsAmount) + ' &times; ' + commMultiplier + ' periods):</span> <span>$' + formatCurrency(annualCommissions) + '</span></div>';
+    }
+  }
+
+  var annualChange = 0;
+  var changeMultiplier = 1;
+  if (changeBasis === "hourly") {
+    var changeHours = hoursPerWeek > 0 ? hoursPerWeek : 40;
+    annualChange = anticipatedChange * changeHours * 52;
+  } else {
+    changeMultiplier = getMultiplier(changeBasis);
+    annualChange = anticipatedChange * changeMultiplier;
+  }
+
+  // Pro-rate based on effective date within the 12-month projection
+  var evStart = evEffectiveDateInput ? evEffectiveDateInput.value : "";
+  var changeDateStr = changeEffectiveDateInput ? changeEffectiveDateInput.value : "";
+  var prorateText = "";
+
+  if (annualChange > 0 && evStart && changeDateStr) {
+    var startDate = new Date(evStart + 'T00:00:00');
+    var endDate = new Date(evStart + 'T00:00:00');
+    endDate.setFullYear(endDate.getFullYear() + 1);
+    var changeDate = new Date(changeDateStr + 'T00:00:00');
+
+    if (changeDate > startDate) {
+      if (changeDate >= endDate) {
+        annualChange = 0;
+        prorateText = " (starts after projection period)";
+      } else {
+        var totalMs = endDate - startDate;
+        var remainingMs = endDate - changeDate;
+        var ratio = remainingMs / totalMs;
+        annualChange = annualChange * ratio;
+        
+        var weeks = Math.round(remainingMs / (1000 * 60 * 60 * 24 * 7));
+        prorateText = " (pro-rated for " + weeks + " weeks remaining)";
+      }
+    }
+  }
+
+  if (annualChange > 0) {
+    var details = "";
+    if (changeBasis === "hourly") {
+      var changeHours = hoursPerWeek > 0 ? hoursPerWeek : 40;
+      details = "($" + formatCurrency(anticipatedChange) + " &times; " + changeHours + " hrs &times; 52 wks)";
+    } else {
+      details = "($" + formatCurrency(anticipatedChange) + " &times; " + changeMultiplier + " periods)";
+    }
+    breakdownHtml += '<div class="breakdown-item"><span>Anticipated Change ' + details + prorateText + ':</span> <span>$' + formatCurrency(annualChange) + '</span></div>';
+  }
+
+  var totalAnnual = annualBase + annualOvertime + annualShiftDiff + annualCommissions + annualChange;
+  
+  if (evBreakdownContainer) {
+    var finalHtml = "";
+    if (totalAnnual > 0) {
+      finalHtml += '<div style="font-weight: 600; color: #1e293b; margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.25rem;">Employment Verification Breakdown</div>';
+      finalHtml += breakdownHtml;
+    }
+    evBreakdownContainer.innerHTML = finalHtml;
+    evBreakdownContainer.style.display = finalHtml ? "block" : "none";
+  }
+
+  if (totalEVIncomeOutput) {
+    totalEVIncomeOutput.value = totalAnnual > 0 ? formatCurrency(totalAnnual) : "";
+  }
+}

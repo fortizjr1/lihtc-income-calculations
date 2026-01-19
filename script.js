@@ -219,19 +219,29 @@ function calculateEmployment() {
   var effectiveDateInput = document.getElementById("empEffectiveDate");
   var dateWarning = document.getElementById("dateWarning");
   
-  var stubInputs = [
-    document.getElementById("grossPay1"),
-    document.getElementById("grossPay2"),
-    document.getElementById("grossPay3"),
-    document.getElementById("grossPay4")
-  ];
-  
-  var dateInputs = [
-    document.getElementById("payDate1"),
-    document.getElementById("payDate2"),
-    document.getElementById("payDate3"),
-    document.getElementById("payDate4")
-  ];
+  var stubInputs = [];
+  var dateInputs = [];
+  var payStubCountSelect = document.getElementById("payStubCount");
+  var maxStubs = payStubCountSelect ? parseInt(payStubCountSelect.value, 10) : 4;
+
+  for (var i = 1; i <= 6; i++) {
+    var grossInput = document.getElementById("grossPay" + i);
+    var dateInput = document.getElementById("payDate" + i);
+    var stubRow = document.getElementById("stubRow" + i);
+
+    if (stubRow) {
+      if (i <= maxStubs) {
+        stubRow.style.display = "grid";
+        if (grossInput) stubInputs.push(grossInput);
+        if (dateInput) dateInputs.push(dateInput);
+      } else {
+        stubRow.style.display = "none";
+        // Clear hidden inputs to avoid confusion in calculation
+        if (grossInput) grossInput.value = "";
+        if (dateInput) dateInput.value = "";
+      }
+    }
+  }
 
   var totalGross = 0;
   var stubCount = 0;
@@ -458,7 +468,10 @@ document.addEventListener("DOMContentLoaded", function () {
     "grossPay2", "payDate2",
     "grossPay3", "payDate3",
     "grossPay4", "payDate4",
-    "payFrequency"
+    "grossPay5", "payDate5",
+    "grossPay6", "payDate6",
+    "payFrequency",
+    "payStubCount"
   ];
   empCalcInputs.forEach(function(id) {
     var el = document.getElementById(id);
@@ -475,4 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (currentMonthlyInput) {
     currentMonthlyInput.addEventListener("blur", autoFillColaBase);
   }
+
+  // Initialize Pay Stubs visibility on load
+  calculateEmployment();
 });

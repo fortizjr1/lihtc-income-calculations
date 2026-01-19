@@ -152,11 +152,19 @@
       </div>
       <div class="card-body">
         <h2>Pay Stubs Calculation</h2>
-        <p class="hint">List the gross amount and pay date from the four most recent pay periods.</p>
+        <div class="field-block" style="margin-bottom: 1.5rem; max-width: 300px;">
+          <label for="payStubCount">How Many Pay Stubs?</label>
+          <select id="payStubCount" class="form-select">
+            <option value="2" selected>2 Pay Stubs (HOTMA)</option>
+            <option value="4">4 Pay Stubs</option>
+            <option value="6">6 Pay Stubs</option>
+          </select>
+        </div>
+        <p class="hint">List the gross amount and pay date from the most recent pay periods.</p>
         
-        <div class="pay-stubs-grid">
+        <div id="payStubsGrid" class="pay-stubs-grid">
           <!-- Stub 1 -->
-          <div class="stub-row">
+          <div class="stub-row" id="stubRow1">
             <div class="field-block">
               <label for="grossPay1">Stub 1: Gross Pay</label>
               <div class="currency-input">
@@ -171,7 +179,7 @@
           </div>
 
           <!-- Stub 2 -->
-          <div class="stub-row">
+          <div class="stub-row" id="stubRow2">
             <div class="field-block">
               <label for="grossPay2">Stub 2: Gross Pay</label>
               <div class="currency-input">
@@ -186,7 +194,7 @@
           </div>
 
           <!-- Stub 3 -->
-          <div class="stub-row">
+          <div class="stub-row" id="stubRow3" style="display: none;">
             <div class="field-block">
               <label for="grossPay3">Stub 3: Gross Pay</label>
               <div class="currency-input">
@@ -201,7 +209,7 @@
           </div>
 
           <!-- Stub 4 -->
-          <div class="stub-row">
+          <div class="stub-row" id="stubRow4" style="display: none;">
             <div class="field-block">
               <label for="grossPay4">Stub 4: Gross Pay</label>
               <div class="currency-input">
@@ -212,6 +220,36 @@
             <div class="field-block">
               <label for="payDate4">Pay Date</label>
               <input id="payDate4" type="date" placeholder="choose date">
+            </div>
+          </div>
+
+          <!-- Stub 5 -->
+          <div class="stub-row" id="stubRow5" style="display: none;">
+            <div class="field-block">
+              <label for="grossPay5">Stub 5: Gross Pay</label>
+              <div class="currency-input">
+                <span class="currency-prefix">$</span>
+                <input id="grossPay5" type="number" step="0.01" min="0" inputmode="decimal" class="emp-gross-input">
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="payDate5">Pay Date</label>
+              <input id="payDate5" type="date" placeholder="choose date">
+            </div>
+          </div>
+
+          <!-- Stub 6 -->
+          <div class="stub-row" id="stubRow6" style="display: none;">
+            <div class="field-block">
+              <label for="grossPay6">Stub 6: Gross Pay</label>
+              <div class="currency-input">
+                <span class="currency-prefix">$</span>
+                <input id="grossPay6" type="number" step="0.01" min="0" inputmode="decimal" class="emp-gross-input">
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="payDate6">Pay Date</label>
+              <input id="payDate6" type="date" placeholder="choose date">
             </div>
           </div>
         </div>

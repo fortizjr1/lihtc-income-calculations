@@ -21,8 +21,11 @@
 <meta property="twitter:description" content="Free income calculation tools for LIHTC properties">
 <meta property="twitter:image" content="https://lihtcforms.com/og-image.png">
 
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- START USERMAVEN CODE -->
   <script type="text/javascript"> 
@@ -72,7 +75,7 @@
         </div>
       </div>
       <div class="card-body">
-        <h2>Current Benefit</h2>
+        <h2><i class="fas fa-hand-holding-dollar"></i> Current Benefit</h2>
         <div class="grid grid-current">
           <div class="field-block">
             <label for="ssLetterDate">Social Security Letter Date</label>
@@ -101,8 +104,8 @@
     </section>
     <section class="card">
       <div class="card-body">
-        <h2>COLA Adjustment (Next Year)</h2>
-        <p class="hint">Complete this section if a cost-of-living adjustment (COLA) is known for next year. COLA increase announcements are typically released in October each year. Visit <a href="https://www.ssa.gov/cola/" target="_blank">https://www.ssa.gov/cola/</a> to find the latest increase amount.</p>
+        <h2><i class="fas fa-chart-line"></i> COLA Adjustment</h2>
+        <p class="hint">Complete this section if a cost-of-living adjustment (COLA) is known for next year. Visit <a href="https://www.ssa.gov/cola/" target="_blank">ssa.gov/cola</a> for updates.</p>
         <div class="grid grid-cola">
           <div class="field-block">
             <label for="colaEffectiveDate">COLA effective date</label>
@@ -170,7 +173,7 @@
         </div>
       </div>
       <div class="card-body">
-        <h2>Pay Stubs Calculation</h2>
+        <h2><i class="fas fa-receipt"></i> Pay Stub Entries</h2>
         <div class="field-block" style="margin-bottom: 1.5rem; max-width: 300px;">
           <label for="payStubCount">How Many Pay Stubs?</label>
           <select id="payStubCount" class="form-select">
@@ -281,6 +284,7 @@
 
     <section class="card">
       <div class="card-body">
+        <h2><i class="fas fa-file-invoice-dollar"></i> Pay Stub Details</h2>
         <div class="grid grid-2">
           <div class="field-block">
             <label for="avgGrossPay">Average Gross Pay</label>
@@ -333,7 +337,7 @@
         </div>
       </div>
       <div class="card-body">
-        <h2>Employment Status</h2>
+        <h2><i class="fas fa-user-tie"></i> Employment Status</h2>
         <div class="grid grid-2">
           <div class="field-block">
             <label>Presently Employed?</label>
@@ -356,7 +360,7 @@
 
     <section class="card">
       <div class="card-body">
-        <h2>Base Wages / Salary</h2>
+        <h2><i class="fas fa-money-check-alt"></i> Base Wages / Salary</h2>
         <div class="grid grid-2">
           <div class="field-block">
             <label for="evLetterDate">EV Letter Date</label>
@@ -393,7 +397,7 @@
 
     <section class="card">
       <div class="card-body">
-        <h2>Additional Pay Rates</h2>
+        <h2><i class="fas fa-clock"></i> Overtime & Shift Differential</h2>
         <div class="grid grid-2">
           <div class="field-block">
             <label for="overtimeRate">Overtime Rate ($ per hour)</label>
@@ -423,7 +427,7 @@
 
     <section class="card">
       <div class="card-body">
-        <h2>Commissions, Tips, Bonuses</h2>
+        <h2><i class="fas fa-coins"></i> Commissions, Tips, Bonuses</h2>
         <div class="grid grid-2">
           <div class="field-block">
             <label for="commissionsAmount">Amount</label>
@@ -449,7 +453,7 @@
 
     <section class="card">
       <div class="card-body">
-        <h2>Anticipated Changes & Other Info</h2>
+        <h2><i class="fas fa-calendar-alt"></i> Anticipated Changes & Other Info</h2>
         <div class="grid grid-2">
           <div class="field-block">
             <label for="anticipatedChange">Anticipated rate of pay change (next 12mo)</label>

@@ -374,6 +374,12 @@ function resetForm() {
     select.selectedIndex = 0;
   });
 
+  // Restore defaults that differ from the first option / hidden state
+  var changeBasisSel = document.getElementById("changeBasis");
+  if (changeBasisSel) changeBasisSel.value = "yearly";
+  var hoursBlockReset = document.getElementById("hoursPerWeekBlock");
+  if (hoursBlockReset) hoursBlockReset.style.display = "block";
+
   // Reset Presently Employed radios to 'yes'
   var yesRadio = document.querySelector('input[name="presentlyEmployed"][value="yes"]');
   if (yesRadio) {
@@ -693,52 +699,55 @@ function calculateEV() {
     }
   }
 
-  var annualChange = 0;
+  // --- Anticipated pay change (treated as the NEW rate) ---
+  // Convert the entered new rate to an annual figure.
+  var newAnnualRate = 0;
   var changeMultiplier = 1;
+  var changeHours = hoursPerWeek > 0 ? hoursPerWeek : 40;
   if (changeBasis === "hourly") {
-    var changeHours = hoursPerWeek > 0 ? hoursPerWeek : 40;
-    annualChange = anticipatedChange * changeHours * 52;
+    newAnnualRate = anticipatedChange * changeHours * 52;
   } else {
     changeMultiplier = getMultiplier(changeBasis);
-    annualChange = anticipatedChange * changeMultiplier;
+    newAnnualRate = anticipatedChange * changeMultiplier;
   }
 
-  // Pro-rate based on effective date within the 12-month projection
+  // The new rate replaces base pay only for the part of the 12-month window
+  // after the change date, so we adjust base pay by (new rate - base) x fraction of year.
   var evStart = evEffectiveDateInput ? evEffectiveDateInput.value : "";
   var changeDateStr = changeEffectiveDateInput ? changeEffectiveDateInput.value : "";
-  var prorateText = "";
+  var annualChange = 0;
+  var changeNote = "";
 
-  if (annualChange > 0 && evStart && changeDateStr) {
-    var startDate = new Date(evStart + 'T00:00:00');
-    var endDate = new Date(evStart + 'T00:00:00');
-    endDate.setFullYear(endDate.getFullYear() + 1);
-    var changeDate = new Date(changeDateStr + 'T00:00:00');
+  if (newAnnualRate > 0) {
+    if (!evStart || !changeDateStr) {
+      changeNote = "Anticipated change not included: enter the Effective Date and the Effective Date of Change.";
+    } else {
+      // Whole calendar days (avoids daylight-saving drift from millisecond math)
+      var DAY = 86400000;
+      var s = parseDate(evStart);
+      var e = new Date(s.getFullYear() + 1, s.getMonth(), s.getDate());
+      var c = parseDate(changeDateStr);
+      var utc = function (d) { return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+      var totalDays = Math.round((utc(e) - utc(s)) / DAY);
+      var daysAfter = Math.round((utc(e) - utc(c)) / DAY);
+      daysAfter = Math.max(0, Math.min(totalDays, daysAfter));
+      var fraction = daysAfter / totalDays;
 
-    if (changeDate > startDate) {
-      if (changeDate >= endDate) {
-        annualChange = 0;
-        prorateText = " (starts after projection period)";
+      if (fraction > 0) {
+        annualChange = (newAnnualRate - annualBase) * fraction;
+        var rateText = (changeBasis === "hourly")
+          ? "$" + formatCurrency(anticipatedChange) + " &times; " + changeHours + " hrs &times; 52 wks"
+          : "$" + formatCurrency(anticipatedChange) + " &times; " + changeMultiplier + " periods";
+        breakdownHtml += '<div class="breakdown-item"><span>Anticipated change: new rate (' + rateText + ' = $' + formatCurrency(newAnnualRate) +
+          '/yr) replaces base pay for ' + daysAfter + ' of ' + totalDays + ' days:</span> <span>' +
+          (annualChange < 0 ? "-" : "") + '$' + formatCurrency(Math.abs(annualChange)) + '</span></div>';
       } else {
-        var totalMs = endDate - startDate;
-        var remainingMs = endDate - changeDate;
-        var ratio = remainingMs / totalMs;
-        annualChange = annualChange * ratio;
-        
-        var weeks = Math.round(remainingMs / (1000 * 60 * 60 * 24 * 7));
-        prorateText = " (pro-rated for " + weeks + " weeks remaining)";
+        changeNote = "Anticipated change starts after the 12-month projection period, so it is not included.";
       }
     }
-  }
-
-  if (annualChange > 0) {
-    var details = "";
-    if (changeBasis === "hourly") {
-      var changeHours = hoursPerWeek > 0 ? hoursPerWeek : 40;
-      details = "($" + formatCurrency(anticipatedChange) + " &times; " + changeHours + " hrs &times; 52 wks)";
-    } else {
-      details = "($" + formatCurrency(anticipatedChange) + " &times; " + changeMultiplier + " periods)";
+    if (changeNote) {
+      breakdownHtml += '<div class="breakdown-item"><span>' + changeNote + '</span><span></span></div>';
     }
-    breakdownHtml += '<div class="breakdown-item"><span>Anticipated Change ' + details + prorateText + ':</span> <span>$' + formatCurrency(annualChange) + '</span></div>';
   }
 
   var totalAnnual = annualBase + annualOvertime + annualShiftDiff + annualCommissions + annualChange;

@@ -222,6 +222,115 @@ function formatDateMMDDYYYY(date) {
   return m + "/" + d + "/" + y;
 }
 
+// ---- Pay frequency suggestion -------------------------------------------
+// Looks at the gaps between the pay dates entered and guesses the pay
+// schedule. It only suggests: it never changes the Pay Frequency dropdown.
+
+function daysBetween(a, b) {
+  return Math.round(
+    (Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
+     Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000
+  );
+}
+
+function isLastDayOfMonth(d) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getDate() === 1;
+}
+
+// Returns { values: ["26"] } (one or more <option> values that fit the dates),
+// { values: [] } when the dates fit no standard schedule, or null when there
+// are fewer than two usable dates to compare.
+function suggestPayFrequency(dateList) {
+  var dates = dateList.filter(function(d) {
+    // Ignore blanks and half-typed years (the date box briefly holds year 0002 etc.)
+    return d && d.getFullYear() >= 1990;
+  }).sort(function(a, b) { return a - b; });
+
+  var unique = [];
+  dates.forEach(function(d) {
+    if (!unique.length || daysBetween(unique[unique.length - 1], d) !== 0) unique.push(d);
+  });
+  if (unique.length < 2) return null;
+
+  var gaps = [];
+  for (var i = 1; i < unique.length; i++) {
+    gaps.push(daysBetween(unique[i - 1], unique[i]));
+  }
+  function within(lo, hi) {
+    return gaps.every(function(g) { return g >= lo && g <= hi; });
+  }
+  function allEqual(v) {
+    return gaps.every(function(g) { return g === v; });
+  }
+
+  // Weekly: about 7 days apart (a holiday can shift a pay date by a day or two)
+  if (within(5, 9)) return { values: ["52"] };
+
+  // Monthly: about a month apart
+  if (within(26, 35)) return { values: ["12"] };
+
+  // Bi-weekly vs semi-monthly: both are roughly two weeks apart
+  if (within(12, 18)) {
+    if (allEqual(14)) {
+      // One 14-day gap from the 1st to the 15th fits either schedule
+      if (gaps.length === 1 && unique[0].getDate() === 1 && unique[1].getDate() === 15) {
+        return { values: ["26", "24"] };
+      }
+      return { values: ["26"] };
+    }
+
+    // Semi-monthly: paid on the same two days each month (e.g. 15th and last day)
+    var days = unique.map(function(d) { return isLastDayOfMonth(d) ? "EOM" : String(d.getDate()); });
+    var distinct = days.filter(function(v, idx) { return days.indexOf(v) === idx; });
+    var alternates = days.every(function(v, idx) { return idx === 0 || v !== days[idx - 1]; });
+    if (distinct.length <= 2 && alternates) return { values: ["24"] };
+
+    // Roughly 14 days apart but shifted a day (holiday): still bi-weekly
+    if (within(13, 15)) return { values: ["26"] };
+  }
+
+  return { values: [] };
+}
+
+function updatePayFrequencyHint(dateList) {
+  var hint = document.getElementById("payFrequencyHint");
+  var select = document.getElementById("payFrequency");
+  if (!hint || !select) return;
+
+  hint.classList.remove("is-match", "is-mismatch");
+  var result = suggestPayFrequency(dateList);
+  if (!result) {
+    hint.style.display = "none";
+    hint.textContent = "";
+    return;
+  }
+
+  function label(value) {
+    for (var i = 0; i < select.options.length; i++) {
+      if (select.options[i].value === value) return select.options[i].text;
+    }
+    return value;
+  }
+
+  var selected = select.value;
+  var text;
+  if (!result.values.length) {
+    text = "These pay dates don’t match a regular weekly, bi-weekly, semi-monthly or monthly schedule. Check the dates.";
+    hint.classList.add("is-mismatch");
+  } else {
+    var names = result.values.map(label).join(" or ");
+    if (result.values.indexOf(selected) !== -1) {
+      text = "Pay dates are consistent with " + names + ".";
+      hint.classList.add("is-match");
+    } else {
+      text = "Pay dates look " + names + ", but " + label(selected) + " is selected.";
+      hint.classList.add("is-mismatch");
+    }
+  }
+  hint.textContent = text;
+  hint.style.display = "block";
+}
+
 function calculateEmployment() {
   var totalEmploymentOutput = document.getElementById("totalEmploymentIncome");
   var avgGrossOutput = document.getElementById("avgGrossPay");
@@ -297,6 +406,11 @@ function calculateEmployment() {
   if (dateWarning) {
     dateWarning.style.display = hasOutdatedDate ? "block" : "none";
   }
+
+  // Suggest (never set) the pay frequency from the pay dates entered
+  updatePayFrequencyHint(dateInputs.map(function(input) {
+    return input && input.value ? parseDate(input.value) : null;
+  }));
 
   var frequency = parseInt(payFrequencyInput.value, 10);
 

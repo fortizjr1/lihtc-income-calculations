@@ -538,6 +538,20 @@ input[type="radio"] {
   color: var(--error-text) !important;
 }
 
+/* Suggested pay frequency under the Pay Frequency dropdown */
+.pay-frequency-hint {
+  margin-top: 0.125rem;
+}
+
+.pay-frequency-hint.is-match {
+  color: #1b6b3a;
+}
+
+.pay-frequency-hint.is-mismatch {
+  color: var(--warn-text);
+  font-weight: 600;
+}
+
 /* Print-only household summary at the top of the Pay Stub Breakdown page */
 .print-summary {
   display: none;

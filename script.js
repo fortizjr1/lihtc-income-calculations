@@ -327,7 +327,15 @@ function calculateEmployment() {
   // Show breakdown
   if (empBreakdownContainer) {
     var frequencyText = payFrequencyInput.options[payFrequencyInput.selectedIndex].text.split(" ")[0];
-    var stubsHtml = validStubs.map(function(stub, idx) {
+    // List stubs oldest to newest regardless of entry order; undated stubs go last.
+    // Sort a copy so the form inputs and the calculation are unaffected.
+    var sortedStubs = validStubs.slice().sort(function(a, b) {
+      if (a.date && b.date) return a.date.getTime() - b.date.getTime();
+      if (a.date) return -1;
+      if (b.date) return 1;
+      return 0;
+    });
+    var stubsHtml = sortedStubs.map(function(stub, idx) {
       var dateStr = stub.date ? ` (Dated ${formatDateMMDDYYYY(stub.date)})` : "";
       return `
         <div class="breakdown-item">

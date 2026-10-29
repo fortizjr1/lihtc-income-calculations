@@ -538,6 +538,11 @@ input[type="radio"] {
   color: var(--error-text) !important;
 }
 
+/* Print-only household summary at the top of the Pay Stub Breakdown page */
+.print-summary {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .page-header {
@@ -717,5 +722,44 @@ input[type="radio"] {
   .stub-row {
     background: transparent !important;
     border: 1px solid #d3dae2 !important;
+  }
+
+  /* The Pay Stub Breakdown always prints on its own page */
+  .breakdown-page {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .print-summary {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #0e2742;
+  }
+
+  .print-summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+
+  .print-summary-name {
+    flex: 1 1 14rem;
+  }
+
+  .print-summary-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #566273;
+  }
+
+  .print-summary-value {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: #0e2742;
+    overflow-wrap: anywhere;
   }
 }

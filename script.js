@@ -425,7 +425,31 @@ function resetForm() {
   }, 3000);
 }
 
+// Copy the Pay Stubs header fields into the print-only summary at the top of
+// the Pay Stub Breakdown page.
+function updatePrintSummary() {
+  var nameInput = document.getElementById("empMemberName");
+  var unitInput = document.getElementById("empApartmentNumber");
+  var dateInput = document.getElementById("empEffectiveDate");
+  var nameOut = document.getElementById("printEmpMemberName");
+  var unitOut = document.getElementById("printEmpUnit");
+  var dateOut = document.getElementById("printEmpEffectiveDate");
+  if (!nameOut || !unitOut || !dateOut) return;
+
+  var name = nameInput ? nameInput.value.trim() : "";
+  var unit = unitInput ? unitInput.value.trim() : "";
+  var date = dateInput ? parseDate(dateInput.value) : null;
+
+  nameOut.textContent = name || "—";
+  unitOut.textContent = unit || "—";
+  dateOut.textContent = date ? formatDateMMDDYYYY(date) : "—";
+}
+
+// Runs for the Print button and for Ctrl/Cmd+P or the browser's print menu.
+window.addEventListener("beforeprint", updatePrintSummary);
+
 function printPage() {
+  updatePrintSummary();
   window.print();
 }
 

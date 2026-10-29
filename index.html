@@ -309,8 +309,23 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card breakdown-page">
       <div class="card-body">
+        <!-- Shown only when printing, so the breakdown page identifies the household -->
+        <div class="print-summary" aria-hidden="true">
+          <div class="print-summary-item print-summary-name">
+            <span class="print-summary-label">Household Member Name</span>
+            <span id="printEmpMemberName" class="print-summary-value"></span>
+          </div>
+          <div class="print-summary-item">
+            <span class="print-summary-label">Unit #</span>
+            <span id="printEmpUnit" class="print-summary-value"></span>
+          </div>
+          <div class="print-summary-item">
+            <span class="print-summary-label">Effective Date</span>
+            <span id="printEmpEffectiveDate" class="print-summary-value"></span>
+          </div>
+        </div>
         <div id="empBreakdownContainer" class="breakdown-info"></div>
         <div class="total-row">
           <label for="totalEmploymentIncome">Total annual employment income</label>
